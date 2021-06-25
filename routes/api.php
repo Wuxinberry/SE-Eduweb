@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:POST,GET,OPTIONS');
+header('Access-Control-Allow-Headers:Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild,origin');
 
 /*
 |--------------------------------------------------------------------------
