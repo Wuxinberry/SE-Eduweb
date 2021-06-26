@@ -135,41 +135,54 @@ class AnswerPaperController extends Controller
         // * ]
     function CorrectForEachPage($exam_id) {
         // select all students participated the exam
-        $students = DB::table('exam_student')->where('exam_id', $exam_id)->pluck('student_id');
         $cnt_total = DB::table('exam_student')->where('exam_id', $exam_id)->count();
+        if($cnt_total == 0) {
+            return -1;
+        }
+        $students = DB::table('exam_student')->where('exam_id', $exam_id)->pluck('student_id');
         $paper_id = DB::table('exam_identity')->where('exam_id', $exam_id)->value('paper_id');
         // store result into an array
         $judge_result = array();  // judge_id=>correctness
         $choose_result = array(); // choose_id=>correctness 
         // select questions
-        $judge_ids = DB::table('test_paper_judge_question')->where('paper_id', $paper_id)->plunk('judge_id');
-        $choose_ids = DB::table('test_paper_choose_question')->where('paper_id', $paper_id)->plunk('choose_id');
+        $judge_ids = DB::table('test_paper_judge_question')->where('paper_id', $paper_id)->pluck('judge_id');
+        $choose_ids = DB::table('test_paper_choose_question')->where('paper_id', $paper_id)->pluck('choose_id');
         // loop to get correctness ratio
         foreach($judge_ids as $judge_id) {
-            $cnt_correct = 0;
-            foreach($students as $student_id) {
-                $answer = DB::table('answer_paper_judge')
-                        ->where('exam_id', $exam_id)->where('student_id', $student_id)->where('judge_id', $judge_id)
-                        ->value('result');
-                if ( $answer == 1) {
-                    $cnt_correct++;
+            $tmp_stu_num = DB::table('answer_paper_judge')->where('exam_id', $exam_id)->where('judge_id', $judge_id)->count();
+            if ( $tmp_stu_num == 0) {
+                $judge_result[$judge_id] = 0;
+            } else {
+                $cnt_correct = 0;
+                foreach($students as $student_id) {
+                    $answer = DB::table('answer_paper_judge')
+                            ->where('exam_id', $exam_id)->where('student_id', $student_id)->where('judge_id', $judge_id)
+                            ->value('result');
+                    if ( $answer == 1) {
+                        $cnt_correct++;
+                    }
                 }
+                $tmp_ratio = $cnt_correct/$cnt_total;
+                $judge_result[$judge_id] = $tmp_ratio;
             }
-            $tmp_ratio = $cnt_correct/$cnt_total;
-            $judge_result[$judge_id]=$tmp_ratio;
         }
         foreach($choose_ids as $choose_id) {
-            $cnt_correct = 0;
-            foreach($students as $student_id) {
-                $answer = DB::table('answer_paper_choose')
-                        ->where('exam_id', $exam_id)->where('student_id', $student_id)->where('choose_id', $choose_id)
-                        ->value('result');
-                if ( $answer == 1) {
-                    $cnt_correct++;
+            $tmp_stu_num = DB::table('answer_paper_choose')->where('exam_id', $exam_id)->where('choose_id', $choose_id)->count();
+            if ( $tmp_stu_num == 0) {
+                $choose_result[$choose_id] = 0;
+            } else {
+                $cnt_correct = 0;
+                foreach($students as $student_id) {
+                    $answer = DB::table('answer_paper_choose')
+                            ->where('exam_id', $exam_id)->where('student_id', $student_id)->where('choose_id', $choose_id)
+                            ->value('result');
+                    if ( $answer == 1) {
+                        $cnt_correct++;
+                    }
                 }
+                $tmp_ratio = $cnt_correct/$cnt_total;
+                $choose_result[$choose_id] = $tmp_ratio;
             }
-            $tmp_ratio = $cnt_correct/$cnt_total;
-            $choose_result[$choose_id]=$tmp_ratio;
         }
         $result = array();
         $result['judge'] = $judge_result;

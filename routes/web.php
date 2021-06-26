@@ -2,8 +2,7 @@
 use App\Models\Exam;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExamController;
-use App\Http\Controllers\FileUploadController;
-
+use App\Http\Controllers\AnswerPaperController;
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:POST,GET,OPTIONS');
 header('Access-Control-Allow-Headers:Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild,origin');
@@ -22,7 +21,7 @@ header('Access-Control-Allow-Headers:Content-Type, Content-Length, Authorization
 // php artisan route:cache
 // composer du 
 Route::get('/',  function() {
-    return view('welcome');
+    return 'welcome';
 });
 
 Route::get('foo', function() {
@@ -40,17 +39,11 @@ Route::get('exam/query/{exam_id}', [ExamController::class, 'query']);
 
 Route::get('/stu', 'Selecttabletset@index');
 
-Route::get('/edit/choose/{choose_id}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{answer}', 'Selecttabletset@edit_choose');
-Route::get('/edit/judge/{judge_id}/{stem}/{value}/{answer}', 'Selecttabletset@edit_judge');
-
-Route::get('/scale_add_judge/{course_id}/{teacher_id}/{type}/{stem}/{value}/{correct_answer}', [FileUploadController::class, 'scale_add_judge']);
-Route::get('/scale_add_choose/{course_id}/{teacher_id}/{type}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{correct_answer}', [FileUploadController::class, 'scale_add_choose']);
-
 Route::get('/generatePaper/{paper_name}/{course_id}/{teacher_id}/{choose_num}/{judge_num}', 'Selecttabletset@generatePaper');
 
 Route::get('/Selecttableset/{file}', 'Selecttableset@scale_add');
-
-Route::get('/search/{course_name}', 'Selecttabletset@search');
+Route::get('examstu/query/{stu_id}',[ExamController::class,'queryexamstu']);
+Route::get('answerpaper/query/{stu_id}/{exam_id}',[AnswerPaperController::class,'queryanswer']);
 
 Route::get('/show_choose_questionbyid/{choose_id?}','Selecttabletset@showchoosequesbyid');
 Route::get('/show_choose_questionbycid/{course_id?}','Selecttabletset@showchoosequesbycid');
@@ -66,6 +59,7 @@ Route::get('/modify_judge_question/{judge_id}/{type}/{stem}/{value}/{correct_ans
 Route::get('/delete_judge_question/{judge_id}','Selecttabletset@deletejudgeques' );
 
 Route::get('/show_test_paperbyid/{paper_id}','Selecttabletset@showtestpaperbyid');
+Route::get('/show_test_paperbytid/{teacher_id}','Selecttabletset@showtestpaperbytid');
 Route::get('/add_test_paper/{paper_id}/{paper_name}/{couse_id}/{teacher_id}/{full_mark}', 'Selecttabletset@inserttestpaper' );
 Route::get('/modify_test_paper/{paper_id}/{paper_name}', 'Selecttabletset@modifytestpaper' );
 Route::get('/delete_test_paper/{paper_id}','Selecttabletset@deletetestpaper' );
@@ -79,3 +73,25 @@ Route::get('/add_test_paper_judge_question/{paper_id}/{choose_id}', 'Selecttable
 Route::get('/delete_test_paper_judge_question/{paper_id}/{choose_id?}','Selecttabletset@deletetestpaperjudgequestion' );
 
 Route::get('/count');
+
+
+
+Route::get('/addanswerchoose/{paper_id}/{exam_id}/{student_id}/{choose_id}/{choose_answer}/{score}','AnswerPaperController@add_choose');
+Route::get('/addanswerjudge/{paper_id}/{exam_id}/{student_id}/{judge_id}/{judge_answer}/{score}','AnswerPaperController@add_judge');
+
+
+
+Route::get('/exammodifystate/{exam_id}', [ExamController::class, 'modifyexamstate']);
+Route::get('/showanswerallstu/{exam_id}', 'AnswerPaperController@showallstu');
+Route::get('/examstateupdate',[ExamController::class,'update']);
+
+Route::get('/scale_add_judge/{course_id}/{teacher_id}/{type}/{stem}/{value}/{correct_answer}', [FileUploadController::class, 'scale_add_judge']);
+Route::get('/scale_add_choose/{course_id}/{teacher_id}/{type}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{correct_answer}', [FileUploadController::class, 'scale_add_choose']);
+Route::get('examtea/query/{teacher_id}',[ExamController::class,'queryexamtea']);
+Route::get('/addanswerpaper/{paper_id}/{exam_id}/{student_id}','AnswerPaperController@create');
+Route::get('/addanswercorrectforeachques/{exam_id}','AnswerPaperController@CorrectForEachPage');
+
+
+Route::get('/edit/choose/{choose_id}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{answer}', 'Selecttabletset@edit_choose');
+Route::get('/edit/judge/{judge_id}/{stem}/{value}/{answer}', 'Selecttabletset@edit_judge');
+Route::get('/search/{course_name}', 'Selecttabletset@search');
