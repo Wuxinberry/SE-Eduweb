@@ -262,18 +262,27 @@ class Selecttabletset extends Controller
     }
 
     // * 增加查找函数
-    // todo: 是不是头文件需要增加 为什么不能调用class里面的函数
     public function search($course_name) {
         // get course_ids
-        $course_ids = DB::raw('select ID from course where name like ?', [$course_name]);
+        $course_ids = DB::raw('select ID from course where name like ? or course_id like ?', [$course_name, $course_name]);
         foreach($course_ids as $course_id) {
             // show items
-            showchoosequesbycid($course_id);
-            showJudgequesbycid($course_id);
+            $course_id="%".$course_id."%";
+            $showall_judges = DB::select('select * from Judge_questions where course_id=:coi',['coi'=>$course_id] );
+            $showall_chooses = DB::select('select * from choose_questions where course_id=:coi',['coi'=>$course_id] );
         }
+        $showall_judges += DB::raw('select * from judge_questions where stem like ?', [$course_name]);
+        $showall_chooses += DB::raw('select choose_id from choose_questions where stem like ?', [$course_name]);
+        
     }
-    // * 接收文件
-    // public function scale_add($file) {
-    //     return $file;
-    // }
+
+    //* 增加修改函数
+    public function edit_judge($judge_id, $stem, $value, $answer) {
+        DB::raw('update judge_questions set stem=?, value=?, correcnt_answer=? where judge_id=?',
+        [$stem, $value, $answer,$judge_id]);
+    }
+    public function edit_choose($choose_id, $stem, $value, $optionA, $optionB, $optionC, $optionD, $answer) {
+        DB::raw('update choose_questions set stem=?, value=?, optionA=?, optionB=?, optionC=?, optionD=?, correcnt_answer=? where choose_id=?',
+        [$stem, $value, $optionA, $optionB, $optionC, $optionD, $answer,$choose_id]);
+    }
 }

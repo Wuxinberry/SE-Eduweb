@@ -40,6 +40,9 @@ Route::get('exam/query/{exam_id}', [ExamController::class, 'query']);
 
 Route::get('/stu', 'Selecttabletset@index');
 
+Route::get('/edit/choose/{choose_id}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{answer}', 'Selecttabletset@edit_choose');
+Route::get('/edit/judge/{judge_id}/{stem}/{value}/{answer}', 'Selecttabletset@edit_judge');
+
 Route::get('/scale_add_judge/{course_id}/{teacher_id}/{type}/{stem}/{value}/{correct_answer}', [FileUploadController::class, 'scale_add_judge']);
 Route::get('/scale_add_choose/{course_id}/{teacher_id}/{type}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{correct_answer}', [FileUploadController::class, 'scale_add_choose']);
 
@@ -47,7 +50,7 @@ Route::get('/generatePaper/{paper_name}/{course_id}/{teacher_id}/{choose_num}/{j
 
 Route::get('/Selecttableset/{file}', 'Selecttableset@scale_add');
 
-Route::get('/');
+Route::get('/search/{course_name}', 'Selecttabletset@search');
 
 Route::get('/show_choose_questionbyid/{choose_id?}','Selecttabletset@showchoosequesbyid');
 Route::get('/show_choose_questionbycid/{course_id?}','Selecttabletset@showchoosequesbycid');
