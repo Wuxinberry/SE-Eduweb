@@ -40,6 +40,25 @@ class ExamController extends Controller
         return "update {$update} exam";
     }
 
+    public function update() {
+        $interval = 3;
+        do {
+            $crt_time = date("YY-MM-DD HH:mm:ss");
+            $exam_ids = DB::table('exam_identity')->plunk('exam_id');
+            foreach($exam_ids as $exam_id) {
+                $start_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('start_time');
+                $end_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('end_time');
+                if ( $crt_time > $start_time && $crt_time < $end_time ) {
+                    DB::update('update exam_identity set state=? where exam_id=?', ['进行中', $exam_id]);
+                } else if ( $crt_time > $end_time ) {
+                    DB::update('update exam_identity set state=? where exam_id=?', ['已结束', $exam_id]);
+                }
+            }
+            sleep($interval);
+        } while(true);
+
+    }
+
     public function query($exam_id) {
         $select = DB::select('select * from exam_identity where exam_id = ?', [$exam_id]);
         return $select;
