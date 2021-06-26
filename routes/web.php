@@ -2,6 +2,7 @@
 use App\Models\Exam;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\FileUploadController;
 
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:POST,GET,OPTIONS');
@@ -38,6 +39,9 @@ Route::get('exam/edit/{exam_id}/{paper_id}/{course_id}/{student_id}/{start_time}
 Route::get('exam/query/{exam_id}', [ExamController::class, 'query']);
 
 Route::get('/stu', 'Selecttabletset@index');
+
+Route::get('/scale_add_judge/{course_id}/{teacher_id}/{type}/{stem}/{value}/{correct_answer}', [FileUploadController::class, 'scale_add_judge']);
+Route::get('/scale_add_choose/{course_id}/{teacher_id}/{type}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{correct_answer}', [FileUploadController::class, 'scale_add_choose']);
 
 Route::get('/generatePaper/{paper_name}/{course_id}/{teacher_id}/{choose_num}/{judge_num}', 'Selecttabletset@generatePaper');
 
