@@ -76,6 +76,10 @@ Route::get('/count');
 
 
 
+
+
+
+
 Route::get('/addanswerchoose/{paper_id}/{exam_id}/{student_id}/{choose_id}/{choose_answer}/{score}','AnswerPaperController@add_choose');
 Route::get('/addanswerjudge/{paper_id}/{exam_id}/{student_id}/{judge_id}/{judge_answer}/{score}','AnswerPaperController@add_judge');
 
@@ -83,15 +87,21 @@ Route::get('/addanswerjudge/{paper_id}/{exam_id}/{student_id}/{judge_id}/{judge_
 
 Route::get('/exammodifystate/{exam_id}', [ExamController::class, 'modifyexamstate']);
 Route::get('/showanswerallstu/{exam_id}', 'AnswerPaperController@showallstu');
-Route::get('/examstateupdate',[ExamController::class,'update']);
+
 
 Route::get('/scale_add_judge/{course_id}/{teacher_id}/{type}/{stem}/{value}/{correct_answer}', [FileUploadController::class, 'scale_add_judge']);
 Route::get('/scale_add_choose/{course_id}/{teacher_id}/{type}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{correct_answer}', [FileUploadController::class, 'scale_add_choose']);
 Route::get('examtea/query/{teacher_id}',[ExamController::class,'queryexamtea']);
 Route::get('/addanswerpaper/{paper_id}/{exam_id}/{student_id}','AnswerPaperController@create');
 Route::get('/addanswercorrectforeachques/{exam_id}','AnswerPaperController@CorrectForEachPage');
-
+Route::get('/examstateupdate',[ExamController::class,'update']);
 
 Route::get('/edit/choose/{choose_id}/{stem}/{value}/{optionA}/{optionB}/{optionC}/{optionD}/{answer}', 'Selecttabletset@edit_choose');
 Route::get('/edit/judge/{judge_id}/{stem}/{value}/{answer}', 'Selecttabletset@edit_judge');
 Route::get('/search/{course_name}', 'Selecttabletset@search');
+
+Route::get('/search_judge/{course_name}', 'Selecttabletset@search_judge');
+Route::get('/search_choose/{course_name}', 'Selecttabletset@search_choose');
+
+Route::get('/choosecompare/{paper_id}/{choose_id}/{student_id}/{exam_id}', 'AnswerPaperController@choose_compare');
+Route::get('/judgecompare/{paper_id}/{judge_id}/{student_id}/{exam_id}', 'AnswerPaperController@judge_compare');

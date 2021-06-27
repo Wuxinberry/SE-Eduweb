@@ -150,7 +150,10 @@ class Selecttabletset extends Controller
         $showall=DB::select('select * from Test_paper where paper_id=:coi',['coi'=>$paper_id] );
         return $showall;
      }
-
+     public function showtestpaperbytid($teacher_id){
+        $showall=DB::select('select * from Test_paper where teacher_id=:coi',['coi'=>$teacher_id] );
+        return $showall;
+     }
      public function inserttestpaper($paper_id,$paper_name,$couse_id,$teacher_id,$fullmark){
         
         DB::table('Test_paper')->insert([
@@ -262,21 +265,22 @@ class Selecttabletset extends Controller
     }
 
     // * 增加查找函数
+    // todo: 是不是头文件需要增加 为什么不能调用class里面的函数
     public function search($course_name) {
         // get course_ids
-        $course_ids = DB::raw('select ID from course where name like ? or course_id like ?', [$course_name, $course_name]);
+        $course_ids = DB::raw('select ID from course where name like ?', [$course_name]);
         foreach($course_ids as $course_id) {
             // show items
-            $course_id="%".$course_id."%";
-            $showall_judges = DB::select('select * from Judge_questions where course_id=:coi',['coi'=>$course_id] );
-            $showall_chooses = DB::select('select * from choose_questions where course_id=:coi',['coi'=>$course_id] );
+            showchoosequesbycid($course_id);
+            showJudgequesbycid($course_id);
         }
-        $showall_judges += DB::raw('select * from judge_questions where stem like ?', [$course_name]);
-        $showall_chooses += DB::raw('select choose_id from choose_questions where stem like ?', [$course_name]);
-        
     }
+    // * 接收文件
+    // public function scale_add($file) {
+    //     return $file;
+    // }
 
-    //* 增加修改函数
+
     public function edit_judge($judge_id, $stem, $value, $answer) {
         DB::raw('update judge_questions set stem=?, value=?, correcnt_answer=? where judge_id=?',
         [$stem, $value, $answer,$judge_id]);
@@ -284,5 +288,30 @@ class Selecttabletset extends Controller
     public function edit_choose($choose_id, $stem, $value, $optionA, $optionB, $optionC, $optionD, $answer) {
         DB::raw('update choose_questions set stem=?, value=?, optionA=?, optionB=?, optionC=?, optionD=?, correcnt_answer=? where choose_id=?',
         [$stem, $value, $optionA, $optionB, $optionC, $optionD, $answer,$choose_id]);
+    }
+
+
+    public function search_judge($course_name) {
+        // get course_ids
+        $course_ids = DB::select('select ID from course where name like ? or ID like ?', [$course_name, $course_name]);
+        $showall_judges = DB::select('select * from judge_questions where judge_id = :ji or stem like :ci', ['ji'=>$course_name, 'ci'=>$course_name]);
+        foreach($course_ids as $course_id) {
+             // show items
+            $course_id="%".$course_id."%";
+            $showall_judges += DB::select('select * from Judge_questions where course_id like :coi',['coi'=>$course_id] );
+        }
+        return $showall_judges;
+    }
+    public function search_choose($course_name) {
+        // get course_ids
+        $course_ids = DB::select('select ID from course where name like ? or ID like ?', [$course_name, $course_name]);
+        $showall_chooses = DB::select('select * from choose_questions where choose_id = :ci or stem like :stem', ['ci'=>$course_name, 'stem'=>$course_name]);
+        foreach($course_ids as $course_id) {
+            // show items
+            $course_id="%".$course_id."%";
+            $showall_chooses += DB::select('select * from choose_questions where course_id=:coi',['coi'=>$course_id] );
+        }
+        
+        return $showall_chooses;
     }
 }

@@ -40,28 +40,52 @@ class ExamController extends Controller
         return "update {$update} exam";
     }
 
-    public function update() {
-
-            $crt_time = date("Y-m-d H:i:s", time());
-            $exam_ids = DB::table('exam_identity')->pluck('exam_id');
-            
-            foreach($exam_ids as $exam_id) {
-                $start_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('start_time');
-                $end_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('end_time');
-                if ( $crt_time > $start_time && $crt_time < $end_time ) {
-                    DB::update('update exam_identity set state=? where exam_id=?', ['进行中', $exam_id]);
-                } else if ( $crt_time > $end_time ) {
-                    DB::update('update exam_identity set state=? where exam_id=?', ['已结束', $exam_id]);
-                } else if ( $crt_time < $start_time ) {
-                    DB::update('update exam_identity set state=? where exam_id=?', ['未开始', $exam_id]);
-                }
-            }
-    
-            return $crt_time;
-    }
-
     public function query($exam_id) {
         $select = DB::select('select * from exam_identity where exam_id = ?', [$exam_id]);
         return $select;
     }
+    public function queryexamstu($stu_id) {
+        $select = DB::select('select exam_id from Exam_student where student_id = ?', [$stu_id]);
+        return $select;
+    }
+    public function queryexamtea($tea_id) {
+        $select = DB::select('select * from Exam_identity where teacher_id = ?', [$tea_id]);
+        return $select;
+    }
+    public function modifyexamstate($exam_id){
+        DB::update('update Exam_identity set state=:paper_name where exam_id=:pid',[
+            
+            'pid'=>$exam_id,
+            'paper_name'=>'已结束'
+        ]);
+           return "success";
+    }
+    public function update() {
+
+        $crt_time = date("Y-m-d H:i:s", time());
+        $exam_ids = DB::table('exam_identity')->pluck('exam_id');
+        
+        foreach($exam_ids as $exam_id) {
+            $crt_state = DB::table('exam_identity')->where('exam_id', $exam_id)->value('state');
+            if ( $crt_state == '已结束' ) {
+                continue;
+            }
+            $start_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('start_time');
+            $end_time = DB::table('exam_identity')->where('exam_id', $exam_id)->value('end_time');
+            if ( $crt_time > $start_time && $crt_time < $end_time ) {
+                DB::update('update exam_identity set state=? where exam_id=?', ['进行中', $exam_id]);
+            } else if ( $crt_time > $end_time ) {
+                DB::update('update exam_identity set state=? where exam_id=?', ['已结束', $exam_id]);
+            } else if ( $crt_time < $start_time ) {
+                DB::update('update exam_identity set state=? where exam_id=?', ['未开始', $exam_id]);
+            }
+        }
+
+        return $crt_time;
+    }
+
+
+
+    
+
 }
